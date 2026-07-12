@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PhoneBot Config</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --accent: #58a6ff;
+      --green: #3fb950;
+      --red: #f85149;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 14px;
+      min-height: 100vh;
+      padding: 40px 32px;
+    }
+
+    h1 {
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 32px;
+      letter-spacing: -0.01em;
+    }
+
+    h1 span { color: var(--muted); font-weight: 400; }
+
+    h2 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 14px;
+    }
+
+    section { max-width: 860px; margin-bottom: 28px; }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field.wide { grid-column: 1 / -1; }
+
+    label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    input, select, textarea {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 14px;
+      padding: 8px 10px;
+      width: 100%;
+      transition: border-color 0.15s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+      outline: none;
+    }
+
+    textarea {
+      resize: vertical;
+      line-height: 1.55;
+    }
+
+    textarea.mono {
+      font-family: 'Menlo', 'Consolas', 'Monaco', monospace;
+      font-size: 13px;
+    }
+
+    select option { background: var(--surface); }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .toggle-row:hover { border-color: var(--muted); }
+
+    .toggle-row input[type="checkbox"] { display: none; }
+
+    .pill {
+      width: 36px;
+      height: 20px;
+      background: var(--border);
+      border-radius: 10px;
+      position: relative;
+      flex-shrink: 0;
+      transition: background 0.2s;
+    }
+
+    .pill::after {
+      content: '';
+      position: absolute;
+      top: 3px; left: 3px;
+      width: 14px; height: 14px;
+      background: var(--muted);
+      border-radius: 50%;
+      transition: transform 0.2s, background 0.2s;
+    }
+
+    input[type="checkbox"]:checked + .pill { background: #1f4620; }
+    input[type="checkbox"]:checked + .pill::after { transform: translateX(16px); background: var(--green); }
+
+    .toggle-label { font-size: 13px; color: var(--text); }
+    .toggle-sub   { font-size: 11px; color: var(--muted); margin-left: auto; }
+
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 28px 0;
+      max-width: 860px;
+    }
+
+    .actions {
+      max-width: 860px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    button {
+      background: var(--accent);
+      border: none;
+      border-radius: 6px;
+      color: #0d1117;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 8px 18px;
+      transition: opacity 0.15s;
+    }
+
+    button:hover { opacity: 0.82; }
+    button:disabled { opacity: 0.35; cursor: default; }
+    button.secondary { background: var(--border); color: var(--text); }
+    button.danger { background: var(--red); color: #fff; }
+
+    .dialer {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 18px;
+    }
+
+    .dialer .field input { background: var(--bg); }
+    .call-route { color: var(--muted); font-size: 12px; margin-top: 10px; }
+    #call-status { color: var(--muted); font-size: 13px; }
+    #call-status.ok { color: var(--green); }
+    #call-status.err { color: var(--red); }
+
+    #status {
+      font-size: 13px;
+      transition: color 0.2s;
+    }
+
+    #status.ok  { color: var(--green); }
+    #status.err { color: var(--red); }
+    #status.off { color: transparent; }
+  </style>
+</head>
+<body>
+
+  <h1>PhoneBot <span>/ config</span></h1>
+
+  <section class="dialer">
+    <h2>Browser call</h2>
+    <div class="row">
+      <div class="field wide">
+        <label for="dialer-password">Dialer password</label>
+        <input type="password" id="dialer-password" autocomplete="current-password"
+               placeholder="Required to create a call">
+      </div>
+    </div>
+    <div class="actions">
+      <button id="call-btn" onclick="startCall()">Call phonebot</button>
+      <button id="mute-btn" class="secondary" onclick="toggleMute()" disabled>Mute</button>
+      <button id="hangup-btn" class="danger" onclick="hangUp()" disabled>Hang up</button>
+      <span id="call-status">Ready</span>
+    </div>
+    <div id="call-route" class="call-route"></div>
+  </section>
+
+  <hr>
+
+  <section>
+    <div class="row">
+      <div class="field">
+        <label>LLM Provider</label>
+        <select id="llm_provider" onchange="onProviderChange()">
+          <option value="groq">Groq</option>
+          <option value="fireworks">Fireworks</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>LLM Model</label>
+        <select id="llm_model"></select>
+      </div>
+      <div class="field">
+        <label>TTS Model</label>
+        <select id="tts_model">
+          <option value="eleven_flash_v2_5">eleven_flash_v2_5 — fastest</option>
+          <option value="eleven_turbo_v2_5">eleven_turbo_v2_5</option>
+          <option value="eleven_multilingual_v2">eleven_multilingual_v2</option>
+          <option value="eleven_v3">eleven_v3</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Voice ID</label>
+        <input type="text" id="tts_voice_id" placeholder="ElevenLabs voice ID">
+      </div>
+      <div class="field">
+        <label>STT Model</label>
+        <select id="stt_model">
+          <option value="nova-2">nova-2</option>
+          <option value="nova-2-phonecall">nova-2-phonecall</option>
+          <option value="nova-2-general">nova-2-general</option>
+          <option value="enhanced">enhanced</option>
+        </select>
+      </div>
+      <div class="field wide">
+        <label>Call Recording</label>
+        <label class="toggle-row" for="recording">
+          <input type="checkbox" id="recording">
+          <span class="pill"></span>
+          <span class="toggle-label">Record all calls (dual-channel)</span>
+          <span class="toggle-sub">Stored on Twilio · $0.005/min</span>
+        </label>
+      </div>
+    </div>
+  </section>
+
+  <hr>
+
+  <section>
+    <div class="row">
+      <div class="field wide">
+        <label>Opening Greeting</label>
+        <textarea id="greeting" rows="3" class="mono" placeholder="What the bot says when the receptionist first answers..."></textarea>
+      </div>
+      <div class="field wide">
+        <label>System Prompt</label>
+        <textarea id="system_prompt" rows="22" class="mono" placeholder="System prompt..."></textarea>
+      </div>
+    </div>
+  </section>
+
+  <div class="actions">
+    <button id="save-btn" onclick="save()">Save</button>
+    <span id="status" class="off">—</span>
+  </div>
+
+  <script src="/static/twilio.min.js"></script>
+  <script>
+    let voiceDevice = null;
+    let activeCall = null;
+
+    function setCallStatus(message, state = '') {
+      const el = document.getElementById('call-status');
+      el.textContent = message;
+      el.className = state;
+    }
+
+    function setCallControls(inCall) {
+      document.getElementById('call-btn').disabled = inCall;
+      document.getElementById('hangup-btn').disabled = !inCall;
+      document.getElementById('mute-btn').disabled = !inCall;
+      if (!inCall) document.getElementById('mute-btn').textContent = 'Mute';
+    }
+
+    function finishCall(message = 'Call ended', isError = false) {
+      activeCall = null;
+      setCallControls(false);
+      setCallStatus(message, isError ? 'err' : '');
+      if (voiceDevice) {
+        voiceDevice.destroy();
+        voiceDevice = null;
+      }
+    }
+
+    async function startCall() {
+      const password = document.getElementById('dialer-password').value;
+      if (!password) {
+        setCallStatus('Enter the dialer password', 'err');
+        return;
+      }
+      if (!window.Twilio?.Device) {
+        setCallStatus('Twilio Voice SDK failed to load', 'err');
+        return;
+      }
+
+      setCallControls(true);
+      setCallStatus('Requesting microphone access…');
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        stream.getTracks().forEach(track => track.stop());
+
+        const response = await fetch('/api/twilio-token', {
+          headers: { 'X-Dialer-Password': password },
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.detail || `Token request failed (${response.status})`);
+
+        document.getElementById('call-route').textContent =
+          `${data.callerId} → ${data.destination}`;
+        voiceDevice = new Twilio.Device(data.token, {
+          codecPreferences: ['opus', 'pcmu'],
+          logLevel: 1,
+        });
+        voiceDevice.on('error', error => {
+          if (activeCall) finishCall(error.message || 'Twilio device error', true);
+          else setCallStatus(error.message || 'Twilio device error', 'err');
+        });
+
+        setCallStatus('Calling…');
+        const call = await voiceDevice.connect({ params: {} });
+        activeCall = call;
+        call.on('ringing', () => setCallStatus('Ringing…'));
+        call.on('accept', () => setCallStatus('Connected', 'ok'));
+        call.on('disconnect', () => finishCall());
+        call.on('cancel', () => finishCall('Call canceled'));
+        call.on('reject', () => finishCall('Call rejected', true));
+        call.on('error', error => finishCall(error.message || 'Call failed', true));
+      } catch (error) {
+        finishCall(error.message || 'Unable to start call', true);
+      }
+    }
+
+    function hangUp() {
+      if (activeCall) activeCall.disconnect();
+    }
+
+    function toggleMute() {
+      if (!activeCall) return;
+      const muted = !activeCall.isMuted();
+      activeCall.mute(muted);
+      document.getElementById('mute-btn').textContent = muted ? 'Unmute' : 'Mute';
+    }
+
+    document.documentElement.dataset.twilioSdkLoaded = String(!!window.Twilio?.Device);
+    if (!window.Twilio?.Device) {
+      document.getElementById('call-btn').disabled = true;
+      setCallStatus('Twilio Voice SDK failed to load', 'err');
+    }
+
+    const MODELS = {
+      groq: [
+        { value: 'openai/gpt-oss-120b',                         label: 'gpt-oss-120b (120b)' },
+        { value: 'llama-3.3-70b-versatile',                     label: 'llama-3.3-70b-versatile (70b)' },
+        { value: 'qwen/qwen3-32b',                              label: 'qwen3-32b (32b)' },
+        { value: 'groq/compound',                               label: 'compound (groq)' },
+      ],
+      fireworks: [
+        { value: 'accounts/fireworks/models/gpt-oss-120b',      label: 'gpt-oss-120b (120b)' },
+        { value: 'accounts/fireworks/models/deepseek-v4-pro',   label: 'deepseek-v4-pro' },
+        { value: 'accounts/fireworks/models/kimi-k2p6',         label: 'kimi-k2p6' },
+      ],
+    };
+
+    function onProviderChange() {
+      const provider = document.getElementById('llm_provider').value;
+      const sel = document.getElementById('llm_model');
+      sel.innerHTML = '';
+      for (const m of (MODELS[provider] || [])) {
+        const opt = document.createElement('option');
+        opt.value = m.value;
+        opt.textContent = m.label;
+        sel.appendChild(opt);
+      }
+    }
+
+    const TEXT_FIELDS = ['tts_model', 'tts_voice_id', 'stt_model', 'greeting', 'system_prompt'];
+    const BOOL_FIELDS = ['recording'];
+
+    async function load() {
+      try {
+        const r = await fetch('/config');
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const d = await r.json();
+        const provEl = document.getElementById('llm_provider');
+        if (provEl) { provEl.value = d['llm_provider'] ?? 'groq'; onProviderChange(); }
+        const modelEl = document.getElementById('llm_model');
+        if (modelEl) modelEl.value = d['llm_model'] ?? '';
+        for (const f of TEXT_FIELDS) {
+          const el = document.getElementById(f);
+          if (el) el.value = d[f] ?? '';
+        }
+        for (const f of BOOL_FIELDS) {
+          const el = document.getElementById(f);
+          if (el) el.checked = !!d[f];
+        }
+      } catch (e) {
+        setStatus('Failed to load: ' + e.message, true);
+      }
+    }
+
+    async function save() {
+      const btn = document.getElementById('save-btn');
+      btn.disabled = true;
+      const body = {};
+      body['llm_provider'] = document.getElementById('llm_provider')?.value ?? 'groq';
+      body['llm_model']    = document.getElementById('llm_model')?.value ?? '';
+      for (const f of TEXT_FIELDS) {
+        const el = document.getElementById(f);
+        if (el) body[f] = el.value;
+      }
+      for (const f of BOOL_FIELDS) {
+        const el = document.getElementById(f);
+        if (el) body[f] = el.checked;
+      }
+      try {
+        const r = await fetch('/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        setStatus('Saved', false);
+      } catch (e) {
+        setStatus('Save failed: ' + e.message, true);
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    function setStatus(msg, isErr) {
+      const el = document.getElementById('status');
+      el.textContent = msg;
+      el.className = isErr ? 'err' : 'ok';
+      if (!isErr) setTimeout(() => { el.textContent = '—'; el.className = 'off'; }, 2500);
+    }
+
+    onProviderChange();
+    load();
+  </script>
+</body>
+</html>
