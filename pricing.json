@@ -1,0 +1,40 @@
+{
+  "_comment": "Per-unit provider rates used by the per-call cost calculator. Update when providers change pricing or when adding models to the UI dropdowns. Models missing here are reported as UNKNOWN RATE, never guessed.",
+  "as_of": "2026-06-11",
+  "llm_per_mtok": {
+    "groq": {
+      "llama-3.3-70b-versatile": {"in": 0.59, "out": 0.79},
+      "llama-3.1-8b-instant": {"in": 0.05, "out": 0.08},
+      "qwen/qwen3-32b": {"in": 0.29, "out": 0.59},
+      "gpt-oss-120b": {"in": 0.15, "out": 0.60},
+      "kimi-k2p6": {"in": 1.0, "out": 3.0, "cached_in": 0.5}
+    },
+    "fireworks": {
+      "accounts/fireworks/models/gpt-oss-120b": {"in": 0.15, "out": 0.6},
+      "accounts/fireworks/models/kimi-k2p6": {"in": 0.95, "out": 4.0},
+      "accounts/fireworks/models/deepseek-v4-pro": {"in": 1.74, "out": 3.48}
+    }
+  },
+  "stt_usd_per_min": {
+    "nova-2": 0.0059,
+    "nova-2-general": 0.0059,
+    "nova-2-phonecall": 0.0059,
+    "nova-3": 0.0077,
+    "enhanced": 0.0145
+  },
+  "tts_credits_per_char": {
+    "eleven_flash_v2_5": 0.5,
+    "eleven_turbo_v2_5": 0.5,
+    "eleven_multilingual_v2": 1.0,
+    "eleven_v3": 1.0
+  },
+  "elevenlabs_plan": "creator",
+  "elevenlabs_usd_per_credit": {
+    "free": 0.0,
+    "starter": 0.000167,
+    "creator": 0.00022,
+    "pro": 0.000198,
+    "scale": 0.000165,
+    "business": 0.00012
+  }
+}
